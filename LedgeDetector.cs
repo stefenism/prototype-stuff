@@ -7,14 +7,14 @@ public class LedgeDetector : MonoBehaviour {
 	public GameObject[]  detectionRays;
 	public float ledgeDistance;
 
-	private PlayerControllerAbes player;
+	private PlayerController player;
 
 	public LayerMask groundLayer;
 
 
 	// Use this for initialization
 	void Start () {
-		player = GetComponent<PlayerControllerAbes>();
+		player = GetComponent<PlayerController>();
 
 		//detectionRays = new GameObject[2];
 	}
@@ -43,7 +43,6 @@ public class LedgeDetector : MonoBehaviour {
 		{
 			if(chestLevelRay.collider.gameObject.tag == "Ground")
 			{
-				Debug.Log("?????chestLevelRay collider: " + chestLevelRay.collider.gameObject.tag);
 				if (eyeLevelRay.collider == null)
 				{
 					//Debug.Log("!!!!!eyeLevelRay collider: " + eyeLevelRay.collider.gameObject.tag);
@@ -53,11 +52,8 @@ public class LedgeDetector : MonoBehaviour {
 				}
 				if(eyeLevelRay.collider != null)
 				{
-					Debug.Log("!!!!!eyeLevelRay collider: " + eyeLevelRay.collider.gameObject.tag);
 					if(eyeLevelRay.collider.gameObject.tag != "Ground")
 					{
-						Debug.Log("!!!!!eyeLevelRay collider2 electric boogaloo: " + eyeLevelRay.collider.gameObject.tag);
-
 						player.ledgeDetected = true;
 					}
 				}

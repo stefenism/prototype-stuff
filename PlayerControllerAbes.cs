@@ -12,12 +12,13 @@ public class PlayerControllerAbes : MonoBehaviour {
 	public bool jumping;
 	public bool jumpingForward;
 	private bool canJump;
-	private bool canRun;
+	[SerializeField] private bool canRun;
 	private bool sprinting;
 
 	public bool grounded;
 	public bool jumpAllowed;
 	public bool ledgeDetected;
+	private bool ledgeDrop;
 
 	public float jumpForce;
 	public float speed;
@@ -43,6 +44,8 @@ public class PlayerControllerAbes : MonoBehaviour {
 
 		sprinting = false;
 		canRun = true;
+
+		ledgeDrop = false;
 	}
 
 	// Update is called once per frame
@@ -90,6 +93,7 @@ public class PlayerControllerAbes : MonoBehaviour {
 		}
 		else
 		{
+			canRun = false;
 			canJump = false;
 		}
 
@@ -97,7 +101,7 @@ public class PlayerControllerAbes : MonoBehaviour {
 
 
 
-		if(ledgeDetected)
+		if(ledgeDetected && !ledgeDrop)
 		{
 			GrabLedge();
 		}
@@ -131,15 +135,14 @@ public class PlayerControllerAbes : MonoBehaviour {
 			jumping = true;
 			canJump = false;
 			canRun = false;
-
 		}
 
 		if(Input.GetKeyDown(KeyCode.Space) && rb.velocity.x != 0 && jumpAllowed)
 		{
 			jumpDirection = (jumpTowardsObject.transform.position - transform.position).normalized;
 			jumpingForward = true;
-			canRun = false;
 			canJump = false;
+			canRun = false;
 		}
 	}
 
@@ -154,7 +157,7 @@ public class PlayerControllerAbes : MonoBehaviour {
 		if(jumpingForward)
 		{
 			jumpingForward = false;
-			rb.AddForce(new Vector2(jumpDirection.x * jumpForce / 3, 1f * jumpForce/2f), ForceMode2D.Impulse);
+			rb.AddForce(new Vector2(jumpDirection.x * jumpForce * 1.2f, 1f * jumpForce/2f), ForceMode2D.Impulse);
 		}
 
 		if(rb.velocity.y > maxVelocity.y)
@@ -166,7 +169,29 @@ public class PlayerControllerAbes : MonoBehaviour {
 
 	void GrabLedge()
 	{
-		Debug.Log("Grab the ledge, remove gravity, stop movement yadda yadd");
+		//Debug.Log("Grab the ledge, remove gravity, stop movement yadda yadd");
+		rb.velocity = Vector2.zero;
+		rb.gravityScale = 0;
+		canRun = false;
+		canJump = false;
+
+		if(Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+		{
+			rb.gravityScale = 1;
+			ledgeDrop = true;
+			StartCoroutine(LedgeDrop(1));
+		}
+
+		if(Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+		{
+			Debug.Log("pull up");
+			rb.gravityScale = 1;
+			//rb.AddForce(new Vector2(jumpDirection.x * jumpForce, 1f * jumpForce/3f), ForceMode2D.Impulse);
+			canJump = true;
+			jumpAllowed = true;
+			ledgeDrop = true;
+			StartCoroutine(LedgeDrop(1));
+		}
 	}
 
 	void DetermineRunButton()
@@ -188,6 +213,13 @@ public class PlayerControllerAbes : MonoBehaviour {
 		Vector3 theScale = transform.localScale;
 		theScale.x *= -1;
 		transform.localScale = theScale;
+	}
+
+	private IEnumerator LedgeDrop(float seconds)
+	{
+		yield return new WaitForSeconds(seconds);
+
+		ledgeDrop = false;
 	}
 
 

@@ -33,7 +33,7 @@ public class GroundDetectAbes : MonoBehaviour {
 		if(hit.collider != null)
 		{
 
-			if(hit.collider.gameObject.tag == "Ground" && (player.rb.velocity.y > 5))
+			if(hit.collider.gameObject.tag == "Ground" && (player.rb.velocity.y > 2))
 			{
 				player.grounded = false;
 			}
